@@ -10,11 +10,8 @@ namespace Тестовое_ПТМК_консольное_приложение_д
             string connectionString = ConfigurationManager.ConnectionStrings["pgconn"].ConnectionString;
             Console.WriteLine($"Строка подключения: {connectionString}");
 
-            //var args = "2_\" sss     s фыв\"_2002-09-18_Female".Split('_', StringSplitOptions.RemoveEmptyEntries);
 
-
-
-            string mode = args.Length > 0 ? args[0] : "2";
+            string mode = args.Length > 0 ? args[0] : "1";
             switch (mode)
             {
                 case "1":
@@ -25,19 +22,8 @@ namespace Тестовое_ПТМК_консольное_приложение_д
                     Console.WriteLine("Вы выбрали режим добавления записи(пункт 2)");
                     if (args.Length == 4)
                     {
-                        try
-                        {
-                            var employee = new Employee(
-                                fullName: args[1],
-                                birthdate: args[2],
-                                gender: args[3]
-                                );
-                            await employee.insertIntoTable(connectionString);
-                        }
-                        catch(Exception ex)
-                        {
-                            Console.WriteLine($"Произошла ошибка: {ex.Message}");
-                        }
+                        var employee = new Employee(args);
+                        await employee.insertIntoTable(connectionString);
                     }
                     else
                     {
@@ -45,32 +31,21 @@ namespace Тестовое_ПТМК_консольное_приложение_д
                     }
                     break;
                 case "3":
-                    /*
-                     * 3. Вывод всех строк справочника сотрудников, с уникальным значением ФИО+дата, отсортированным по ФИО.
-                     *  Вывести ФИО, Дату рождения, пол, кол-во полных лет.
-                        Пример запуска приложения:
-                        myApp 3
-                     */
                     Console.WriteLine("Вы выбрали режим вывода всех строк справочника(пункт 3)");
                     await Employee.selectAllWithUnicFioData(connectionString);
                     break;
                 case "4":
-                    /*
-                     * 4. Заполнение автоматически 1000000 строк справочника сотрудников. 
-                     * Распределение пола в них должно быть относительно равномерным, начальной буквы ФИО также. 
-                        Добавить заполнение автоматически 100 строк в которых
-                         пол мужской и Фамилия начинается с "F".
-                        У класса необходимо создать метод, который пакетно отправляет данные в БД, принимая массив объектов.
-                        Пример запуска приложения:
-                        myApp 4
-                     */
                     Console.WriteLine("Вы выбрали режим создания 1000000 записей(пункт 4)");
                     await Employee.insertMillionRecords(connectionString);
+                    //await Employee.insertHundredRowsMaleFamiliaStartWithF(connectionString);
+                    break;
+                case "5":
+                    Console.WriteLine("Вы выбрали режим поиска записей по критерию: пол мужской, Фамилия начинается с \"F\".(пункт 5)");
+                    await Employee.selectWithConditionMaleAndFamiliaStartWithF(connectionString);
                     break;
                 default:
                     Console.WriteLine("Вы не выбрали режим работы приложения");
                     break;
-                
             }
         }
     }
